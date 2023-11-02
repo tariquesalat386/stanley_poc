@@ -1,0 +1,33 @@
+name: Build And Deploy iOS App To App Store
+on:
+  push:
+    branches: ["tsalat"]
+jobs:
+  build_and_deploy_ios_app_to_app_store:
+    runs-on: macos-13
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        run: sudo xcode-select -s /Applications/Xcode_15.0.1.app
+
+      - name: Install Bundler
+        run: gem install bundler
+
+      - name: Install gems
+        run: bundle install
+
+      - name: Create App
+        run: |
+          bundle exec fastlane ios create_ipa
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+
+      - name: check files
+        run: |
+          ls
+          ls fastlane
+          ls ios-dev-poc
